@@ -57,11 +57,14 @@ def main():
             
             for selectedFold in range(TotalfoldNumber):
                 
-                # fold the data function (implemented from scratch)
                 trainDF,testDF= Fold(totalDF,TotalfoldNumber)
+                dfTrain,dfTest= Fold(totalDF,selectedFold,TotalfoldNumber)
                 
                 # implement KNN for the selectedFold:
-                
+#                 X_train=(dfTrain.loc[:,0:p????]) 
+#                 X_test=(dfTest.loc[:,0:p?????])
+#                 y_train=dfTrain[f-1????]
+#                 y_test=dfTest[f-1????]
                 
                 #store the cummulativescore of KNN for each fold in 
                 
