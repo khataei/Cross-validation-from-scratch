@@ -57,7 +57,7 @@ def main():
             
             for selectedFold in range(TotalfoldNumber):
                 
-                trainDF,testDF= Fold(totalDF,TotalfoldNumber)
+                # fold the data, dfTest is the test part(selected fold)
                 dfTrain,dfTest= Fold(totalDF,selectedFold,TotalfoldNumber)
                 
                 # implement KNN for the selectedFold:
