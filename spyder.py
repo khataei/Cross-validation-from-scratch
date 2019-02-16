@@ -15,23 +15,32 @@ def main():
     from pandas import read_csv
     ########################### Variable dictionary #########################
     # featureDataSet is a pandas DataFrame that contains all the data for working
-    #
-    #
+    # foldNumber is number of folds, data is divided to "foldNumber" folds 
+    #featureNumber is maximum number of features that are used
     #########################################################################
     
     # read the file
     df= read_csv("A2_t2_dataset.tsv",sep="\t",header=None)
     featureDataSet= df.iloc[:,:-1] # select only the features
-    target=df.iloc[:,-1:]
-    print(target)
+    target=df.iloc[:,-1:] # class column
     P= featureDataSet.shape[1] # number of features
  
-
+    # Feature selection and preparation
     featureDataSet=Feature_Select_Corr(featureDataSet)
     featureDataSet=Feature_Sort(featureDataSet)
     featureDataSet=Feature_Scaling(featureDataSet)
-    print(featureDataSet)
+ 
     
+    #Setting performance variables:
+    foldNumber=5 # number of folds
+    featureNumber=21 # maximum number of features to be used 
+    
+
+    for f in range(featureNumber):
+        # f+1 is the number of selected features to work with in the f'th Iteration
+        # features_working is the first i'th feature selected to work with
+        features_working= featureDataSet.iloc[:,:f+1]
+        
     
     
 def Feature_Select_Corr(featureDataSet):
@@ -66,10 +75,12 @@ def Feature_Sort(featureDataSet):
     # sorting features based on rel std by reindexing
     return featureDataSet.reindex(relStd.sort_values(ascending=False).index,axis=1)
 
+
 def Feature_Scaling(featureDataSet):
     from sklearn.preprocessing import StandardScaler
     sc=StandardScaler()
     print("Features are scaled")
     return pd.DataFrame(sc.fit_transform(featureDataSet.astype(float)))
+
     
 if __name__ == "__main__":main() 
