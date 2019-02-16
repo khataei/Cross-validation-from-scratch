@@ -17,6 +17,8 @@ def main():
     # featureDataSet is a pandas DataFrame that contains all the data for working
     # foldNumber is number of folds, data is divided to "foldNumber" folds 
     #featureNumber is maximum number of features that are used
+    # maxNeighbours is maximum number of neighbours used in KNN
+    #scoreMatrix is a matrix, rows are number of features and colummn number of neighbours. elemts are scores
     #########################################################################
     
     # read the file
@@ -25,7 +27,7 @@ def main():
     target=df.iloc[:,-1:] # class column
     P= featureDataSet.shape[1] # number of features
  
-    # Feature selection and preparation
+    # Unsupervised feature selection and preparation
     featureDataSet=Feature_Select_Corr(featureDataSet)
     featureDataSet=Feature_Sort(featureDataSet)
     featureDataSet=Feature_Scaling(featureDataSet)
@@ -34,12 +36,23 @@ def main():
     #Setting performance variables:
     foldNumber=5 # number of folds
     featureNumber=21 # maximum number of features to be used 
+    maxNeighbours=21 # maximum number of neighbours used in KNN
+    # scoreMAtrix keeps scores for different KNN and features selection
+    scoreMatrix= pd.DataFrame(np.zeros((featureNumber,maxNeighbours)))
     
-
+    
+    # Feature selection 
     for f in range(featureNumber):
         # f+1 is the number of selected features to work with in the f'th Iteration
         # features_working is the first i'th feature selected to work with
         features_working= featureDataSet.iloc[:,:f+1]
+        
+        # KNN implementation
+        for k in range(1,maxNeighbours+1):
+            #k is number of neighbours for each itteration
+            
+            # Calling the folding function implemented from scratch
+            
         
     
     
