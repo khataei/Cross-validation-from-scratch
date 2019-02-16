@@ -18,7 +18,7 @@ def main():
     # foldNumber is number of folds, data is divided to "foldNumber" folds 
     #featureNumber is maximum number of features that are used
     # maxNeighbours is maximum number of neighbours used in KNN
-    #scoreMatrix is a matrix, rows are number of features and colummn number of neighbours. elemts are scores
+    # scoreMatrix is a matrix, rows are number of features and colummn number of neighbours. elemts are scores
     #########################################################################
     
     # read the file
@@ -34,7 +34,7 @@ def main():
  
     
     #Setting performance variables:
-    foldNumber=5 # number of folds
+    TotalfoldNumber=5 # number of folds
     featureNumber=21 # maximum number of features to be used 
     maxNeighbours=21 # maximum number of neighbours used in KNN
     # scoreMAtrix keeps scores for different KNN and features selection
@@ -51,7 +51,23 @@ def main():
         for k in range(1,maxNeighbours+1):
             #k is number of neighbours for each itteration
             
-            # Calling the folding function implemented from scratch
+            
+            # Mergging features and target to fold them
+            totalDF= pd.concat((features_working,target),axis=1) # a coplete sebset of data
+            
+            for selectedFold in range(TotalfoldNumber):
+                
+                # fold the data function (implemented from scratch)
+                trainDF,testDF= Fold(totalDF,TotalfoldNumber)
+                
+                # implement KNN for the selectedFold:
+                
+                
+                #store the cummulativescore of KNN for each fold in 
+                
+                
+                # take the averge of scores
+            
             
         
     
