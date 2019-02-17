@@ -4,15 +4,17 @@ Created on Fri Feb 15 22:13:28 2019
 
 @author: Javad
 """
+import math
+import time
 import pandas as pd
 import numpy as np
-import time
 import sklearn as sk
+
+from pandas import read_csv
 from sklearn import preprocessing
 
 
 def main():
-    from pandas import read_csv
     ########################### Variable dictionary #########################
     # featureDataSet is a pandas DataFrame that contains all the data for working
     # foldNumber is number of folds, data is divided to "foldNumber" folds 
@@ -24,7 +26,7 @@ def main():
     # read the file
     df= read_csv("A2_t2_dataset.tsv",sep="\t",header=None)
     featureDataSet= df.iloc[:,:-1] # select only the features
-    target=df.iloc[:,-1:] # class column
+    target= df.iloc[:,-1:] # class column
     P= featureDataSet.shape[1] # number of features
  
     # Unsupervised feature selection and preparation
@@ -34,9 +36,9 @@ def main():
  
     
     #Setting performance variables:
-    TotalfoldNumber=5 # number of folds
-    featureNumber=21 # maximum number of features to be used 
-    maxNeighbours=21 # maximum number of neighbours used in KNN
+    TotalfoldNumber = 5 # number of folds
+    featureNumber = 1 # maximum number of features to be used 
+    maxNeighbours = 21 # maximum number of neighbours used in KNN
     # scoreMAtrix keeps scores for different KNN and features selection
     scoreMatrix= pd.DataFrame(np.zeros((featureNumber,maxNeighbours)))
     
@@ -45,7 +47,7 @@ def main():
     for f in range(featureNumber):
         # f+1 is the number of selected features to work with in the f'th Iteration
         # features_working is the first i'th feature selected to work with
-        features_working= featureDataSet.iloc[:,:f+1]
+        features_working = featureDataSet.iloc[:,:f+1]
         
         # KNN implementation
         for k in range(1,maxNeighbours+1):
@@ -53,13 +55,21 @@ def main():
             
             
             # Mergging features and target to fold them
-            totalDF= pd.concat((features_working,target),axis=1) # a coplete sebset of data
+            totalDF= pd.concat((features_working,target),axis=1) # a complete sebset of data
+            totalDF.columns=range(totalDF.shape[1])
+           # print(totalDF)
+            
+           
+           # folds is a 3D matrix with a shape of = {totalfolds* rows per fold* (feature+target)}
+            folds = SplitFold(totalDF,TotalfoldNumber)
+            print(type(folds))
             
             for selectedFold in range(TotalfoldNumber):
                 
-                # fold the data, dfTest is the test part(selected fold)
-                dfTrain,dfTest= Fold(totalDF,selectedFold,TotalfoldNumber)
-                
+                # converts folds to test and train set
+                dfTest= Mergefolds(folds,selectedFold,TotalfoldNumber)
+                print(dfTest)
+                #print(f,k,selectedFold)
                 # implement KNN for the selectedFold:
 #                 X_train=(dfTrain.loc[:,0:p????]) 
 #                 X_test=(dfTest.loc[:,0:p?????])
@@ -70,6 +80,56 @@ def main():
                 
                 
                 # take the averge of scores
+#indexes..........  
+                
+def Mergefolds(folds,selectedFold,TotalfoldNumber):
+    
+    foldColumn = folds.shape[2]
+    foldRow = folds.shape[1]
+    print(foldColumn,foldRow)
+    # Testset is the selected fold, drop possible NaN and reset its index
+    dfTest = pd.DataFrame(folds[selectedFold,:,:]).dropna().reset_index(drop=True)
+    
+    # To form Trainset: 1- delete selected fold
+#    dfTrain= pd.DataFrame(np.delete(folds, selectedFold, axis=0))
+    # 2- Reshape it to proper size, then drop possible NaN
+#    dfTrain= dfTrain.ravel().reshape((TotalfoldNumber-1)*foldRow,foldColumn).dropna().reset_index(drop=True)
+
+    return  dfTest
+
+
+
+
+def SplitFold(totalDF,TotalfoldNumber):
+
+    rows = totalDF.shape[0] # number of total rows 
+    foldRow = math.ceil(rows/TotalfoldNumber) # maximum number of rows in each fold  
+    foldColumn = totalDF.shape[1] # number of features 
+    folds= np.empty((TotalfoldNumber,foldRow,foldColumn)) # creating empty folds, 
+    folds[:]=np.nan # set the fold toNan so eliminating them would be easy by pd.dropna
+    
+    # if need to shuffle use this:
+    # suffle them with sklearn 
+    # from sklearn import utils
+    # initial=utils.shuffle(initial)
+    
+    classA= totalDF.loc[totalDF[foldColumn-1]==0] # the one with 0 in the last column are class A
+    classB= totalDF.loc[totalDF[foldColumn-1]==1]
+
+    cA=classA.values # convert pandas Data frame to numpy array
+    cB=classB.values
+    sizeA=cA.shape[0] # sizeA is the number of instances in class A
+    
+    for i in range(sizeA): # asigning almost equal number of class A and B to folds
+            folds[i%TotalfoldNumber,i//TotalfoldNumber,:]=cA[i,:]
+
+    for i in range(sizeA,rows,1): # we start from sizeA to continue with the next fold, not necceserily the first one
+            folds[i%TotalfoldNumber,i//TotalfoldNumber,:]=cB[i-sizeA,:]
+    # Untill here we read the data, devided into k fold, each fold has same number of class A and B
+    return folds
+ 
+        
+
             
             
         
