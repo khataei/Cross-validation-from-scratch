@@ -68,23 +68,23 @@ def main():
            
            # folds is a 3D matrix with a shape of = {totalfolds* rows per fold* (feature+target)}
             folds = SplitFold(totalDF,TotalfoldNumber)
-            print(type(folds))
             
             for selectedFold in range(TotalfoldNumber):
                 
                 # converts folds to test and train set
-                dfTest= Mergefolds(folds,selectedFold,TotalfoldNumber)
-                print(dfTest)
-                print(selectedFold)
+                dfTrain , dfTest = Mergefolds(folds,selectedFold,TotalfoldNumber)
                 #print(f,k,selectedFold)
                 # implement KNN for the selectedFold:
-#                 X_train=(dfTrain.loc[:,0:p????]) 
-#                 X_test=(dfTest.loc[:,0:p?????])
-#                 y_train=dfTrain[f-1????]
-#                 y_test=dfTest[f-1????]
+                
+                # Make datasets ready for KNN
+                X_train = dfTrain.iloc[:,:-1] # all but the last column
+                X_test = dfTest.iloc[:,:-1]
+                y_train=dfTrain.iloc[:,-1:] # the target column
+                y_test=dfTest.iloc[:,-1:]
                 
                 #store the cummulativescore of KNN for each fold in 
                 
+
                 
                 # take the averge of scores
 #indexes..........  
@@ -98,11 +98,13 @@ def Mergefolds(folds,selectedFold,TotalfoldNumber):
     dfTest = pd.DataFrame(folds[selectedFold,:,:]).dropna().reset_index(drop=True)
     
     # To form Trainset: 1- delete selected fold
-#    dfTrain= pd.DataFrame(np.delete(folds, selectedFold, axis=0))
-    # 2- Reshape it to proper size, then drop possible NaN
-#    dfTrain= dfTrain.ravel().reshape((TotalfoldNumber-1)*foldRow,foldColumn).dropna().reset_index(drop=True)
+    dfTrain= (np.delete(folds, selectedFold, axis=0))
+    # 2- Reshape it to proper size
+    dfTrain= pd.DataFrame(dfTrain.ravel().reshape((TotalfoldNumber-1) * foldRow,foldColumn))
+    # 3- drop NaN and reset the index
+    dfTrain= dfTrain.dropna().reset_index(drop=True)
 
-    return  dfTest
+    return  dfTrain, dfTest
 
 #dfTrain doesn't work
 
