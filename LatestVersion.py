@@ -15,7 +15,7 @@ from pandas import read_csv
 from sklearn import preprocessing
 from sklearn import utils
 from sklearn.neighbors import KNeighborsClassifier
-
+from sklearn.metrics import roc_auc_score
 
 
 
@@ -46,8 +46,8 @@ def main():
     
     #Setting performance variables:
     TotalfoldNumber = 5 # number of folds
-    featureNumber = 5 # maximum number of features to be used 
-    maxNeighbours = 11 # maximum number of neighbours used in KNN
+    featureNumber = 10 # maximum number of features to be used 
+    maxNeighbours = 7 # maximum number of neighbours used in KNN
     # scoreMAtrix keeps scores for different KNN and features selection
     scoreMatrix= pd.DataFrame(np.zeros((featureNumber,maxNeighbours)))
     
@@ -89,10 +89,12 @@ def main():
                 # implement KNN for the selectedFold:
                 neighbor = KNeighborsClassifier(n_neighbors=neigborNumber)
                 neighbor.fit(X_train, y_train)
-                accuracy = neighbor.score(X_test, y_test)
-                print(accuracy)
-
-                print(f,neigborNumber)
+                y_predicted = neighbor.predict(X_test)
+               # accuracy = neighbor.score(X_test, y_test) # if need only KNN accuracy un comment this
+                accuracy = roc_auc_score(y_test, y_predicted) # Area under the curve by sklearn
+#                print(accuracy)
+#
+#                print(f,neigborNumber)
                
                 #store the cummulativescore of KNN for each fold in 
                 scoreMatrix.iloc[f,neigborNumber-1] = scoreMatrix.iloc[f,neigborNumber-1] + accuracy
@@ -120,7 +122,6 @@ def Mergefolds(folds,selectedFold,TotalfoldNumber):
 
     return  dfTrain, dfTest
 
-#dfTrain doesn't work
 
 
 def SplitFold(totalDF,TotalfoldNumber):
