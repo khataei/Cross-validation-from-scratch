@@ -11,8 +11,11 @@ import numpy as np
 import sklearn as sk
 
 from pandas import read_csv
+
 from sklearn import preprocessing
 from sklearn import utils
+from sklearn.neighbors import KNeighborsClassifier
+
 
 
 
@@ -43,8 +46,8 @@ def main():
     
     #Setting performance variables:
     TotalfoldNumber = 5 # number of folds
-    featureNumber = 1 # maximum number of features to be used 
-    maxNeighbours = 21 # maximum number of neighbours used in KNN
+    featureNumber = 2 # maximum number of features to be used 
+    maxNeighbours = 3 # maximum number of neighbours used in KNN
     # scoreMAtrix keeps scores for different KNN and features selection
     scoreMatrix= pd.DataFrame(np.zeros((featureNumber,maxNeighbours)))
     
@@ -56,7 +59,7 @@ def main():
         features_working = featureDataSet.iloc[:,:f+1]
         
         # KNN implementation
-        for k in range(1,maxNeighbours+1):
+        for neigborNumber in range(1,maxNeighbours+1):
             #k is number of neighbours for each itteration
             
             
@@ -74,20 +77,27 @@ def main():
                 # converts folds to test and train set
                 dfTrain , dfTest = Mergefolds(folds,selectedFold,TotalfoldNumber)
                 #print(f,k,selectedFold)
-                # implement KNN for the selectedFold:
                 
                 # Make datasets ready for KNN
                 X_train = dfTrain.iloc[:,:-1] # all but the last column
                 X_test = dfTest.iloc[:,:-1]
-                y_train=dfTrain.iloc[:,-1:] # the target column
-                y_test=dfTest.iloc[:,-1:]
+
+                y_train=dfTrain.iloc[:,-1:].squeeze() # the target column
+                y_test=dfTest.iloc[:,-1:].squeeze()
+                
+                
+                # implement KNN for the selectedFold:
+                neighbor = KNeighborsClassifier(n_neighbors=neigborNumber)
+                neighbor.fit(X_train, y_train)
+                accuracy = neighbor.score(X_test, y_test)
+                print(accuracy)
+
                 
                 #store the cummulativescore of KNN for each fold in 
                 
 
                 
                 # take the averge of scores
-#indexes..........  
                 
 def Mergefolds(folds,selectedFold,TotalfoldNumber):
     
