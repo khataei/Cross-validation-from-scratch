@@ -51,9 +51,13 @@ def main():
     # scoreMAtrix keeps scores for different KNN and features selection
     scoreMatrix= pd.DataFrame(np.zeros((featureNumber,maxNeighbours)))
     
+    print("Calculation has started, please wait...")
+
     
     # Feature selection 
     for f in range(featureNumber):
+        
+        
         # f+1 is the number of selected features to work with in the f'th Iteration
         # features_working is the first i'th feature selected to work with
         features_working = featureDataSet.iloc[:,:f+1]
@@ -100,6 +104,7 @@ def main():
                 scoreMatrix.iloc[f,neigborNumber-1] = scoreMatrix.iloc[f,neigborNumber-1] + accuracy
                 # neigborNumber-1 : hint: reason for -1 is that the loop starts from 1 and goes to
                 # neigborNumber+1 (Because KNN does not accept 0)
+        print("{:.2f} % is done.".format((f+1)/featureNumber*100))
                 
     # take the averge of scores
     scoreMatrix = scoreMatrix / TotalfoldNumber
