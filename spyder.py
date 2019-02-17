@@ -12,6 +12,8 @@ import sklearn as sk
 
 from pandas import read_csv
 from sklearn import preprocessing
+from sklearn import utils
+
 
 
 def main():
@@ -25,6 +27,10 @@ def main():
     
     # read the file
     df= read_csv("A2_t2_dataset.tsv",sep="\t",header=None)
+    
+    #shuffle the rows
+    df=utils.shuffle(df).reset_index(drop=True)
+
     featureDataSet= df.iloc[:,:-1] # select only the features
     target= df.iloc[:,-1:] # class column
     P= featureDataSet.shape[1] # number of features
@@ -69,6 +75,7 @@ def main():
                 # converts folds to test and train set
                 dfTest= Mergefolds(folds,selectedFold,TotalfoldNumber)
                 print(dfTest)
+                print(selectedFold)
                 #print(f,k,selectedFold)
                 # implement KNN for the selectedFold:
 #                 X_train=(dfTrain.loc[:,0:p????]) 
@@ -97,7 +104,7 @@ def Mergefolds(folds,selectedFold,TotalfoldNumber):
 
     return  dfTest
 
-
+#dfTrain doesn't work
 
 
 def SplitFold(totalDF,TotalfoldNumber):
