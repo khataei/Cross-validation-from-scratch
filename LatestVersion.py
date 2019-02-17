@@ -46,8 +46,8 @@ def main():
     
     #Setting performance variables:
     TotalfoldNumber = 5 # number of folds
-    featureNumber = 2 # maximum number of features to be used 
-    maxNeighbours = 3 # maximum number of neighbours used in KNN
+    featureNumber = 5 # maximum number of features to be used 
+    maxNeighbours = 11 # maximum number of neighbours used in KNN
     # scoreMAtrix keeps scores for different KNN and features selection
     scoreMatrix= pd.DataFrame(np.zeros((featureNumber,maxNeighbours)))
     
@@ -92,18 +92,22 @@ def main():
                 accuracy = neighbor.score(X_test, y_test)
                 print(accuracy)
 
-                
+                print(f,neigborNumber)
+               
                 #store the cummulativescore of KNN for each fold in 
+                scoreMatrix.iloc[f,neigborNumber-1] = scoreMatrix.iloc[f,neigborNumber-1] + accuracy
+                # neigborNumber-1 : hint: reason for -1 is that the loop starts from 1 and goes to
+                # neigborNumber+1 (Because KNN does not accept 0)
                 
-
-                
-                # take the averge of scores
+    # take the averge of scores
+    scoreMatrix = scoreMatrix / TotalfoldNumber
+    print(scoreMatrix)
                 
 def Mergefolds(folds,selectedFold,TotalfoldNumber):
     
-    foldColumn = folds.shape[2]
-    foldRow = folds.shape[1]
-    print(foldColumn,foldRow)
+    foldColumn = folds.shape[2] # number of column for this fold
+    foldRow = folds.shape[1] # number of rows for this fold
+
     # Testset is the selected fold, drop possible NaN and reset its index
     dfTest = pd.DataFrame(folds[selectedFold,:,:]).dropna().reset_index(drop=True)
     
