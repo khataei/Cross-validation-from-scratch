@@ -46,12 +46,12 @@ def main():
     
     #Setting performance variables:
     TotalfoldNumber = 5 # number of folds
-    featureNumber = 10 # maximum number of features to be used 
-    maxNeighbours = 7 # maximum number of neighbours used in KNN
+    featureNumber = 20 # maximum number of features to be used 
+    maxNeighbours = 20 # maximum number of neighbours used in KNN
     # scoreMAtrix keeps scores for different KNN and features selection
     scoreMatrix= pd.DataFrame(np.zeros((featureNumber,maxNeighbours)))
     
-    print("Calculation has started, please wait...")
+    print("Calculation has started, please wait. We will keep you updated")
 
     
     # Feature selection 
@@ -94,8 +94,8 @@ def main():
                 neighbor = KNeighborsClassifier(n_neighbors=neigborNumber)
                 neighbor.fit(X_train, y_train)
                 y_predicted = neighbor.predict(X_test)
-               # accuracy = neighbor.score(X_test, y_test) # if need only KNN accuracy un comment this
-                accuracy = roc_auc_score(y_test, y_predicted) # Area under the curve by sklearn
+                accuracy = neighbor.score(X_test, y_test) # if need only KNN accuracy un comment this
+                #accuracy = roc_auc_score(y_test, y_predicted) # Area under the curve by sklearn
 #                print(accuracy)
 #
 #                print(f,neigborNumber)
@@ -109,6 +109,20 @@ def main():
     # take the averge of scores
     scoreMatrix = scoreMatrix / TotalfoldNumber
     print(scoreMatrix)
+    maxScore=0.0
+    for i in range(featureNumber):
+        for j in range(maxNeighbours-1):
+            if (scoreMatrix.iloc[i,j] > maxScore):
+                bestNumberofFeature = i+1
+                bestNumberofNeighbours = j+1
+                maxScore=scoreMatrix.iloc[i,j]
+    
+    print("The best number of features is {}, The best number of neighbors is {}".format(bestNumberofFeature,bestNumberofNeighbours))
+    print("The accuracy for aforementioned values is: {0:.4f}".format(maxScore))            
+                
+    
+    
+                       
                 
 def Mergefolds(folds,selectedFold,TotalfoldNumber):
     
