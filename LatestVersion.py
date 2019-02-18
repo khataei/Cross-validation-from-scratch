@@ -38,14 +38,15 @@ def main():
     P = featureDataSet.shape[1]  # number of features
 
     # Unsupervised feature selection and preparation
-    featureDataSet = Feature_Select_Corr(featureDataSet)
-    featureDataSet = Feature_Sort(featureDataSet)
-    featureDataSet = Feature_Scaling(featureDataSet)
-
-    # Setting performance variables:
-    TotalfoldNumber = 5  # number of folds
-    featureNumber = 20  # maximum number of features to be used
-    maxNeighbours = 20  # maximum number of neighbours used in KNN
+    featureDataSet=Feature_Select_Corr(featureDataSet)
+    featureDataSet=Feature_Sort(featureDataSet)
+    featureDataSet=Feature_Scaling(featureDataSet)
+ 
+    
+    #Setting performance variables:
+    TotalfoldNumber = 5 # number of folds
+    featureNumber = 8 # maximum number of features to be used 
+    maxNeighbours = 12 # maximum number of neighbours used in KNN
     # scoreMAtrix keeps scores for different KNN and features selection
     scoreMatrix = pd.DataFrame(np.zeros((featureNumber, maxNeighbours)))
 
