@@ -122,9 +122,10 @@ def main():
     scoreMatrix = scoreMatrix.dropna() / TotalfoldNumber
     print(scoreMatrix)
     maxScore = 0.0
+    bestNumberofFeature, bestNumberofNeighbours = 0, 0
     for i in range(featureNumber - 1):
         for j in range(maxNeighbours - 1):
-            if (scoreMatrix.iloc[i, j] > maxScore):
+            if scoreMatrix.iloc[i, j] > maxScore:
                 bestNumberofFeature = i + 1
                 bestNumberofNeighbours = j + 1
                 maxScore = scoreMatrix.iloc[i, j]
