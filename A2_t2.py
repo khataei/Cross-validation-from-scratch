@@ -57,7 +57,8 @@ def main():
     TotalfoldNumber = 5  # number of folds
     featureNumber = 8  # maximum number of features to be used
     maxNeighbours = 8  # maximum number of neighbours used in KNN
-    # scoreMAtrix keeps scores for different KNN and features selection
+    step = 2    # choose only odd number as K value
+    # scoreMatrix keeps scores for different KNN and features selection
     scoreMatrix = pd.DataFrame(np.zeros((featureNumber, maxNeighbours)))
 
     print("Calculation has started, please wait. We will keep you updated")
@@ -70,7 +71,7 @@ def main():
         features_working = featureDataSet.iloc[:, :f]
 
         # KNN implementation
-        for neigborNumber in range(1, maxNeighbours + 1):
+        for neigborNumber in range(1, maxNeighbours + 1, step):
             # k is number of neighbours for each itteration
 
             # Mergging features and target to fold them
@@ -219,7 +220,7 @@ def Feature_Select_Corr(featureDataSet):
     notCorrFeatures = working_df.dropna(axis=1)
     notCorrFeatures.columns = range(notCorrFeatures.shape[1])
 
-    end = time. time()
+    end = time.time()
     print(
         "Feature selection based on correlation took {0:0.2f} seconds ".format(
             end -
