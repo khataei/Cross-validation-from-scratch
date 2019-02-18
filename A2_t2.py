@@ -61,8 +61,6 @@ def main():
     # scoreMatrix keeps scores for different KNN and features selection
     scoreMatrix = pd.DataFrame(np.zeros((featureNumber, maxNeighbours)))
 
-    print("Calculation has started, please wait. We will keep you updated")
-
     # Fold selection
     for selectedFold in range(TotalfoldNumber):
         # Feature selection
@@ -116,15 +114,14 @@ def main():
                                                                        neigborNumber - 1] + accuracy
                 # neigborNumber-1 : hint: reason for -1 is that the loop starts from 1 and goes to
                 # neigborNumber+1 (Because KNN does not accept 0)
-        print("{:.2f} % is done.".format(f / featureNumber * 100))
 
     # take the averge of scores
     scoreMatrix = scoreMatrix.dropna() / TotalfoldNumber
-    print(scoreMatrix)
     maxScore = 0.0
+    bestNumberofFeature, bestNumberofNeighbours = 0, 0
     for i in range(featureNumber - 1):
         for j in range(maxNeighbours - 1):
-            if (scoreMatrix.iloc[i, j] > maxScore):
+            if scoreMatrix.iloc[i, j] > maxScore:
                 bestNumberofFeature = i + 1
                 bestNumberofNeighbours = j + 1
                 maxScore = scoreMatrix.iloc[i, j]
@@ -133,8 +130,7 @@ def main():
         "The best number of features is {}, The best number of neighbors is {}".format(
             bestNumberofFeature,
             bestNumberofNeighbours))
-    print(
-        "The accuracy for aforementioned values is: {0:.4f}".format(maxScore))
+    print("The accuracy for aforementioned values is: {0:.4f}".format(maxScore))
     SurfacePlot(scoreMatrix)
 
 
@@ -199,8 +195,6 @@ def SplitFold(totalDF, TotalfoldNumber):
 
 def Feature_Select_Corr(featureDataSet):
     """ Eliminate some of the features that are correlated and keep one"""
-    print("Start the feature selection based on correlation")
-    start = time.time()  # let's time each step
     # Unsupervised feature selection
     # based on the correlation between features
     # this is the correlation between all features so it is a P*P matrix
@@ -221,11 +215,6 @@ def Feature_Select_Corr(featureDataSet):
     notCorrFeatures = working_df.dropna(axis=1)
     notCorrFeatures.columns = range(notCorrFeatures.shape[1])
 
-    end = time.time()
-    print(
-        "Feature selection based on correlation took {0:0.2f} seconds ".format(
-            end -
-            start))
     return notCorrFeatures
 
 
@@ -233,7 +222,6 @@ def Feature_Sort(featureDataSet):
     relStd = featureDataSet.std() / featureDataSet.mean()  # rel std calculation
     # Hint: (relStd.sort_values(ascending=False).index) # extracting the index
     # of relative std of the features
-    print("Features are sorted based on relative standard deviation")
     # sorting features based on rel std by reindexing
     return featureDataSet.reindex(
         relStd.sort_values(ascending=False).index, axis=1)
@@ -241,7 +229,6 @@ def Feature_Sort(featureDataSet):
 
 def Feature_Scaling(featureDataSet):
     sc = StandardScaler()
-    print("Features are scaled")
     return pd.DataFrame(sc.fit_transform(featureDataSet.astype(float)))
 
 
