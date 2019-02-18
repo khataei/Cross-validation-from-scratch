@@ -9,6 +9,8 @@ import time
 import pandas as pd
 import numpy as np
 import sklearn as sk
+import matplotlib.pyplot as plt
+
 
 from pandas import read_csv
 
@@ -16,6 +18,12 @@ from sklearn import preprocessing
 from sklearn import utils
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import roc_auc_score
+from sklearn.preprocessing import StandardScaler
+
+
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib import cm
+from matplotlib.ticker import LinearLocator, FormatStrFormatter
 
 
 
@@ -39,15 +47,15 @@ def main():
     P= featureDataSet.shape[1] # number of features
  
     # Unsupervised feature selection and preparation
-    featureDataSet=Feature_Select_Corr(featureDataSet)
     featureDataSet=Feature_Sort(featureDataSet)
-    featureDataSet=Feature_Scaling(featureDataSet)
+    featureDataSet=Feature_Select_Corr(featureDataSet)
+    #featureDataSet=Feature_Scaling(featureDataSet)
  
     
     #Setting performance variables:
     TotalfoldNumber = 5 # number of folds
     featureNumber = 8 # maximum number of features to be used 
-    maxNeighbours = 12 # maximum number of neighbours used in KNN
+    maxNeighbours = 8 # maximum number of neighbours used in KNN
     # scoreMAtrix keeps scores for different KNN and features selection
     scoreMatrix= pd.DataFrame(np.zeros((featureNumber,maxNeighbours)))
     
@@ -55,12 +63,12 @@ def main():
 
     
     # Feature selection 
-    for f in range(featureNumber):
+    for f in range(1, featureNumber+1):
         
         
         # f+1 is the number of selected features to work with in the f'th Iteration
         # features_working is the first i'th feature selected to work with
-        features_working = featureDataSet.iloc[:,:f+1]
+        features_working = featureDataSet.iloc[:,:f]
         
         # KNN implementation
         for neigborNumber in range(1,maxNeighbours+1):
@@ -101,16 +109,16 @@ def main():
 #                print(f,neigborNumber)
                
                 #store the cummulativescore of KNN for each fold in 
-                scoreMatrix.iloc[f,neigborNumber-1] = scoreMatrix.iloc[f,neigborNumber-1] + accuracy
+                scoreMatrix.iloc[f-1,neigborNumber-1] = scoreMatrix.iloc[f-1,neigborNumber-1] + accuracy
                 # neigborNumber-1 : hint: reason for -1 is that the loop starts from 1 and goes to
                 # neigborNumber+1 (Because KNN does not accept 0)
-        print("{:.2f} % is done.".format((f+1)/featureNumber*100))
+        print("{:.2f} % is done.".format((f)/featureNumber*100))
                 
     # take the averge of scores
-    scoreMatrix = scoreMatrix / TotalfoldNumber
+    scoreMatrix = scoreMatrix.dropna() / TotalfoldNumber
     print(scoreMatrix)
     maxScore=0.0
-    for i in range(featureNumber):
+    for i in range(featureNumber-1):
         for j in range(maxNeighbours-1):
             if (scoreMatrix.iloc[i,j] > maxScore):
                 bestNumberofFeature = i+1
@@ -118,7 +126,8 @@ def main():
                 maxScore=scoreMatrix.iloc[i,j]
     
     print("The best number of features is {}, The best number of neighbors is {}".format(bestNumberofFeature,bestNumberofNeighbours))
-    print("The accuracy for aforementioned values is: {0:.4f}".format(maxScore))            
+    print("The accuracy for aforementioned values is: {0:.4f}".format(maxScore))      
+    SurfacePlot(scoreMatrix)      
                 
     
     
@@ -193,7 +202,7 @@ def Feature_Select_Corr(featureDataSet):
     for j in range(P-1):
         for i in range(j+1,P): # moving in the upper triangle of the correlation matrix
             if (abs(cordf.iloc[j,i]) > 0.5):
-                featureDataSet.iloc[:,i]= np.nan   
+                featureDataSet.iloc[:,i]= np.nan   # ignoring the second one by setting to NaN
     working_df= featureDataSet.copy()
     notCorrFeatures=working_df.dropna(axis=1) # dropping NaN, which are highly correlated features
     notCorrFeatures.columns = range(notCorrFeatures.shape[1])
@@ -212,10 +221,40 @@ def Feature_Sort(featureDataSet):
 
 
 def Feature_Scaling(featureDataSet):
-    from sklearn.preprocessing import StandardScaler
     sc=StandardScaler()
     print("Features are scaled")
     return pd.DataFrame(sc.fit_transform(featureDataSet.astype(float)))
+
+
+def SurfacePlot(scoreMatrix):
+
+    
+    
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+    
+    # Make data.
+    X = np.arange(scoreMatrix.shape[0])
+    Y = np.arange(scoreMatrix.shape[1])
+    X, Y = np.meshgrid(X, Y)
+
+    
+    # Plot the surface.
+    surf = ax.plot_surface(X, Y, np.array(scoreMatrix), cmap=cm.coolwarm,
+                           linewidth=0, antialiased=False)
+    
+    # Customize the z axis.
+    ax.set_zlim(0.88, 0.915)
+    ax.zaxis.set_major_locator(LinearLocator(10))
+    ax.zaxis.set_major_formatter(FormatStrFormatter('%.04f'))
+    
+    # Add a color bar which maps values to colors.
+    fig.colorbar(surf, shrink=0.5, aspect=5)
+    ax.set_xlabel('Number of features')
+    ax.set_ylabel('Number of neighbors')
+    ax.set_zlabel('KNN accuracy')
+    ax.set_title("Surface plot for accuracy")
+    plt.show()
 
     
 if __name__ == "__main__":main() 
