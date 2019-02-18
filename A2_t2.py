@@ -63,28 +63,29 @@ def main():
 
     print("Calculation has started, please wait. We will keep you updated")
 
-    # Feature selection
-    for f in range(1, featureNumber + 1):
+    # Fold selection
+    for selectedFold in range(TotalfoldNumber):
+        # Feature selection
+        for f in range(1, featureNumber + 1):
 
-        # f+1 is the number of selected features to work with in the f'th Iteration
-        # features_working is the first i'th feature selected to work with
-        features_working = featureDataSet.iloc[:, :f]
+            # f+1 is the number of selected features to work with in the f'th Iteration
+            # features_working is the first i'th feature selected to work with
+            features_working = featureDataSet.iloc[:, :f]
 
-        # KNN implementation
-        for neigborNumber in range(1, maxNeighbours + 1, step):
-            # k is number of neighbours for each itteration
+            # KNN implementation
+            for neigborNumber in range(1, maxNeighbours + 1, step):
+                # k is number of neighbours for each itteration
 
-            # Mergging features and target to fold them
-            # a complete sebset of data
-            totalDF = pd.concat((features_working, target), axis=1)
-            totalDF.columns = range(totalDF.shape[1])
-           # print(totalDF)
+                # Mergging features and target to fold them
+                # a complete sebset of data
+                totalDF = pd.concat((features_working, target), axis=1)
+                totalDF.columns = range(totalDF.shape[1])
+               # print(totalDF)
 
-           # folds is a 3D matrix with a shape of = {totalfolds* rows per fold*
-           # (feature+target)}
-            folds = SplitFold(totalDF, TotalfoldNumber)
+               # folds is a 3D matrix with a shape of = {totalfolds* rows per fold*
+               # (feature+target)}
+                folds = SplitFold(totalDF, TotalfoldNumber)
 
-            for selectedFold in range(TotalfoldNumber):
 
                 # converts folds to test and train set
                 dfTrain, dfTest = Mergefolds(
@@ -115,7 +116,7 @@ def main():
                                                                        neigborNumber - 1] + accuracy
                 # neigborNumber-1 : hint: reason for -1 is that the loop starts from 1 and goes to
                 # neigborNumber+1 (Because KNN does not accept 0)
-        print("{:.2f} % is done.".format((f) / featureNumber * 100))
+        print("{:.2f} % is done.".format(f / featureNumber * 100))
 
     # take the averge of scores
     scoreMatrix = scoreMatrix.dropna() / TotalfoldNumber
