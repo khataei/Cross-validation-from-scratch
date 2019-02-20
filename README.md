@@ -1,5 +1,6 @@
 # Cross-validation from scratch: Feature selection, Tunning model parameters
 
+** The final version is inside the "Completed_version" folder**
 ### Summary:
 Here I import a dataset, preprocess the data and then try to find the best combination of features and KNN neighbor numbers.
 ### Goal:
