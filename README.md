@@ -11,16 +11,16 @@ Let F total number of selected features
 Let K total number of folds
 Let N total number of neighbors for KNN implementation
 1.    Prepare the data
-a.    Read the data and variables
-b.    Shuffle rows
-c.    Split the data to features and target datasets
-d.    Sort the features based on importance, i.e. relative standard deviation
-e.    Eliminate features based on their correlations, i.e. Unsupervised feature selection
-f.    Scale features
+  - a.    Read the data and variables
+  - b.    Shuffle rows
+  - c.    Split the data to features and target datasets
+  - d.    Sort the features based on importance, i.e. relative standard deviation
+  - e.    Eliminate features based on their correlations, i.e. Unsupervised feature selection
+  - f.    Scale features
 2.    For f from 1 to F
-a.    For n from 1 to N
-i.    Split the data pseudo randomly into K folds
-ii.    For k from 1 to K
+  a.    For n from 1 to N
+    i.    Split the data pseudo randomly into K folds
+    ii.    For k from 1 to K
 1.    Set the k’th fold as test dataset and merge all other folds and set to train dataset
 2.    Implement KNN with n neighbor
 3.    Store the KNN accuracy in a 2D matrix
