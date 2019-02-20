@@ -27,7 +27,7 @@ ii.    For k from 1 to K
 3.    Calculated the average score by dividing the matrix by K
 4.    Find the maximum score and return its indices as best number of features and neighbors
 
-##Pseudo code for Cross Validation:
+## Pseudo code for Cross Validation:
 ### Split Part:
 1-    Create an empty 3-D array to store folds
 2-    Divide the data based on the class in to 2 classes, A and B
@@ -38,10 +38,10 @@ b.    For s from 1  to size of class B
 1.    Send Class B instances, s,  to k’th fold
 
 ### Merge part:
-1-    Merge all the folds but the selected one
-2-    Drop all NaN values
-3-    Return the selected fold as the test set and the merged folds as the training set
-Loss function:
+1-    Merge all the folds but the selected one  
+2-    Drop all NaN values  
+3-    Return the selected fold as the test set and the merged folds as the training set  
+### Loss function:
 To compare performances between different selections of features and KNN parameters, we have used the accuracy given by KNN. We implemented Scikit-Learn function and used its score. The scores for all folds are added, and then the average is calculated and considered for comparison. All the accuracies are stored in a matrix and can be used to draw 2-D and 3-D plots.
 
 
